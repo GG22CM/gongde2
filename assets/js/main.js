@@ -60,7 +60,7 @@ Object.defineProperty(totalBox, 'gongde', {
 
 totalBox.addEventListener('click', function () {
     const audio = document.createElement('audio')
-    audio.src =  '../assets/mp3/muyuyin.mp3'
+    audio.src =  './assets/mp3/muyuyin.mp3'
     audio.play()
     totalBox.gongde++
     // reWidth = muyu.style.width 

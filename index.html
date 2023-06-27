@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]>      <html class="no-js"> <!--<![endif]-->
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title></title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="./assets/css/global.css">
+        <style>
+            *{
+                margin: 0;
+                padding: 0;
+            }
+            #canvas {
+                width: 701px;
+                height: 100vh;
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                border: 1px solid black;
+                box-sizing: border-box;
+                background-color: rgba(0, 0, 0, 0);
+            }
+            img {
+                display: none;
+            }
+        </style>
+    </head>
+    <body>
+        <img id="cars" src="./assets/img/cars.png" alt="" class="">
+        <img id="laonainai" src="./assets/img/laonainai.png" alt="">
+        <img id="road" src="./assets/img/road.png" alt="">
+        <img id="pom" src="./assets/img/pom.png" alt="">
+        <audio id="ice" src="./assets/mp3/Ice.wav"></audio>
+        <audio src="./assets/mp3/muyuyin.mp3" style="display: none;"></audio>
+        <div id="gongde">功德：0</div>
+        <div>
+            <p>扶老奶奶过马路， 过一次增加500功德</p>
+            <p>功德2000才能上天堂！</p>
+        </div>
+        <div id="status" style="font-size: 24px;"></div>
+        <div id="totalBox">
+            <div id="container"></div>
+            <div id = "muyu"></div>
+            <div id = "gun"></div>
+        </div>
+        <canvas id="canvas"></canvas>
+        
+        <script src="./assets/js/main.js"></script>
+        <script src="./assets/js/pom.js"></script>
+        <script>
+            const canvas = document.getElementById('canvas')
+            const WIDTH = canvas.width = canvas.offsetWidth
+            const HEIGHT = canvas.height = canvas.offsetHeight
+            const ctx = canvas.getContext('2d')
+
+            class Laonainai {
+                x
+                y
+                speed = 10
+                width = 77
+                height = 85.5
+                img = document.getElementById('laonainai')
+                up = false
+                down = false
+                left = false
+                right = false
+                fallDown = false
+
+                constructor(x, y) {
+                    this.x = x
+                    this.y = y
+                }
+
+                // walk(direction, value) {
+                //     this[direction] = value
+                // }
+                update() {
+                   if (!this.fallDown) {
+                        if (this.up) {
+                            this.y-= this.speed
+                        }
+                        if (this.down) {
+                            this.y+= this.speed
+                        }
+                        if (this.left) {
+                            this.x-= this.speed
+                        } 
+                        if (this.right) {
+                            this.x+= this.speed
+                        }
+                   }
+                  
+                   if (this.x < 0) this.x = 0
+                   if (this.x > WIDTH - this.width) this.x = WIDTH - this.width
+                   if (this.y < 0) this.y = 0
+                   if (this.y > HEIGHT - this.height) this.y = HEIGHT - this.height
+                }
+
+                reset() {
+                    this.up = this.down = this.left = this.right = false  
+                }
+                draw(ctx) {
+                    if (!this.fallDown) {
+                        ctx.drawImage(this.img, this.x, this.y, this.width, this.height)
+                    }else {
+                        ctx.scale(1, -1)
+                        ctx.translate(0, -canvas.height)
+                        ctx.drawImage(this.img, this.x, HEIGHT - this.y - this.height, this.width, this.height )
+                        ctx.resetTransform()
+                    }
+                   
+                }
+               
+            }
+
+            class Car {
+                x
+                y
+                width
+                height
+                startX
+                startY
+                maxHeight
+                maxWidth
+                position
+                direction
+                speed
+                remove
+                static Img = document.getElementById('cars')
+                static Positions = [
+                    {
+                        x: 28,
+                        y: 15,
+                        width: 108,
+                        height: 205
+                    }, {
+                        x: 159,
+                        y: 19,
+                        width: 93,
+                        height: 187
+                    },{
+                        x: 266,
+                        y: 13,
+                        width: 99,
+                        height: 219
+                    },{
+                        x: 377,
+                        y: 18,
+                        width: 94,
+                        height: 186
+                    },{
+                        x: 22,
+                        y: 236,
+                        width: 120,
+                        height: 238
+                    },{
+                        x: 156,
+                        y: 236,
+                        width: 100,
+                        height: 215
+                    },{
+                        x: 264,
+                        y: 238,
+                        width: 120,
+                        height: 243
+                    },{
+                        x: 389,
+                        y: 235,
+                        width: 92,
+                        height: 143
+                    },
+                ]
+                constructor(startX, startY, width, height) {
+                    this.maxWidth = width
+                    this.maxHeight = height
+                    this.startX = startX
+                    this.startY = startY
+                    this.position = Car.Positions[parseInt(Math.random() * 7)]
+                    this.width = this.position.width / 2
+                    this.height  = this.position.height / 2
+                    this.y = height
+                    this.direction = Math.random() > 0.5
+                    //  this.direction = false
+                    this.x = startX + Math.random() * (width - this.width)
+                    // this.x = startX
+                    this.speed = Math.random() * 20 + 5
+                    //  this.speed =  30
+                    
+                }
+                update() {
+                    
+                    this.y -= this.speed
+                    if (this.y < -this.height)  {
+                        this.remove = true
+                    }
+                   
+                }
+                draw(ctx) {
+                    if (this.direction) {
+                        ctx.drawImage(Car.Img, this.position.x, this.position.y, this.position.width, this.position.height, this.x, this.y, this.width, this.height )
+                    }else {
+                        ctx.scale(1, -1)
+                        ctx.translate(0, -canvas.height)
+                        // ctx.fillStyle = 'yellow'
+                        // ctx.fillRect(0, 0, 50, 50)
+                        ctx.drawImage(Car.Img, this.position.x, this.position.y, this.position.width, this.position.height, this.x, this.y, this.width, this.height )
+                        ctx.resetTransform()
+                    }
+                    
+                }
+            }
+
+            let lasttime = 0
+            let time = 0
+
+            const carInterval = 500
+            let cars = []
+            let poms = []
+
+            let gongde = 0
+            let left = false
+            let right = true
+            let start = false
+            const grandMother = new Laonainai(0, 250)
+            const totalBox = document.getElementById('totalBox')
+            const status = document.getElementById('status')
+            
+            document.addEventListener('keydown', e => {
+                const speed = 10    
+                switch(e.code) {
+                    case 'ArrowUp':
+                        grandMother.up = true
+                        break;
+                    case 'ArrowDown':
+                        grandMother.down = true
+                        break;
+                    case 'ArrowLeft':
+                        
+                        grandMother.left = true
+                        break;
+                    case 'ArrowRight':
+                        grandMother.right = true
+                        break;
+                    
+                   
+                    
+                }
+            })
+
+              
+            document.addEventListener('keyup', e => {   
+                switch(e.code) {
+                    case 'ArrowUp':
+                        grandMother.up = false
+                        break;
+                    case 'ArrowDown':
+                        grandMother.down = false
+                        break;
+                    case 'ArrowLeft':
+                        
+                        grandMother.left = false
+                        break;
+                    case 'ArrowRight':
+                        grandMother.right = false
+                        break;
+                    
+                   
+                    
+                }
+            })
+
+            canvas.addEventListener('click', () => {
+                start = true
+            })
+
+
+            function animate(timestamp = 0) {
+               
+                if (!start) {
+                    // console.log(start, 'a');
+                    ctx.font = '30px sans-serif'
+                    ctx.fillText('点击以开始', '270', '400')
+                    requestAnimationFrame(animate)
+                    return;
+                }
+
+                const delay = timestamp - lasttime
+                time += delay
+                lasttime = timestamp
+                // console.log(delay)
+                if (time > carInterval) {
+                    time = 0
+                    const car = new Car(77, 0, 547, HEIGHT)
+                    cars.push(car)
+                }
+
+
+                ctx.fillStyle = 'white'
+                ctx.fillRect(0, 0, WIDTH, HEIGHT)
+                ctx.drawImage(road, 77, 0)
+                ctx.drawImage(road, 77, 649)
+
+
+
+                if (right && grandMother.x >=WIDTH - grandMother.width) {
+                    // grandMother.reset()
+                    // alert("扶老奶奶过马路，奖励功德500！")
+                    status.innerHTML = '扶老奶奶过马路，奖励功德500！'
+                    totalBox.gongde += 500
+                    right = false
+                    left = true
+                }
+
+                if (left && grandMother.x <= 0) {
+                    // grandMother.reset()
+                    // alert("扶老奶奶过马路，奖励功德500！")
+                    status.innerHTML = '扶老奶奶过马路，奖励功德500！'
+                    totalBox.gongde += 500
+                    right = true
+                    left = false
+                }
+  
+               
+
+                grandMother.draw(ctx)
+                grandMother.update()
+                
+
+               
+
+                //判断碰撞
+            
+                for (let i = 0; i < cars.length; i++) { 
+                    const car1 = cars[i]
+                    //判断车与人的碰撞
+                    if (!grandMother.fallDown) {
+                        if ((car1.x > grandMother.x && car1.x < grandMother.x + grandMother.width) || (grandMother.x > car1.x && grandMother.x < car1.x + car1.width)) {
+                            if (car1.direction) {
+                                if ((car1.y > grandMother.y && car1.y < grandMother.y + grandMother.height) || (grandMother.y > car1.y && grandMother.y < car1.y + car1.height)) {
+                                    grandMother.fallDown = true
+                                    car1.remove = true
+                                }   
+                            }else {
+                                if ((HEIGHT - (car1.y + car1.height) > grandMother.y && HEIGHT - (car1.y + car1.height) < grandMother.y + grandMother.height) 
+                                    || (grandMother.y > HEIGHT - (car1.y + car1.height) && grandMother.y < HEIGHT - (car1.y + car1.height) + car1.height)) {
+                                    grandMother.fallDown = true
+                                    car1.remove = true
+                                }
+                            }
+                               
+                        }
+                               
+                    }
+                }
+
+                if (grandMother.fallDown) { 
+                    status.innerHTML = '老奶奶被撞死了！'      
+                    totalBox.style.width = '300px'
+                    totalBox.style.height = '300px'
+                    totalBox.gongde = -20
+                    // grandMother.reset()
+                    grandMother.draw(ctx)
+                    cars = []
+                    // alert('老奶奶被撞死了！功德清零，倒欠20')
+                   
+                    return;
+                }
+
+                for (let i = 0; i < cars.length - 1; i++) { 
+                    const car1 = cars[i]
+                    
+                    //判断车与车的碰撞
+                    for (let j = i + 1; j < cars.length; j++) {
+                        const car2 = cars[j]
+                        const xArr = [car1, car2]
+                        xArr.sort((a, b) => a.x - b.x)
+                        const yArr = [car1, car2]
+                        yArr.sort((a, b) => a.y - b.y)
+                        if (xArr[1].x < xArr[0].x + xArr[0].width) {
+                            if (car1.direction === car2.direction) {
+                                if (yArr[1].y < yArr[0].y + yArr[0].height) {
+                                    let pom
+                                    if (yArr[1].direction) {
+                                        pom = new Pom(yArr[1].x, yArr[1].y, 1)
+                                    }else {
+                                        pom = new Pom(yArr[1].x, HEIGHT - yArr[1].y, 1)
+                                        // console.log(yArr, pom)
+                                    }
+                                    poms.push(pom)
+                                    car1.remove = true
+                                    car2.remove = true
+                                }
+                            }else {
+                                if (yArr[1].y + yArr[0].y <= HEIGHT) {
+                                    let pom
+                                    if (xArr[1].direction) {
+                                        pom = new Pom(xArr[1].x, xArr[1].y, 1)
+                                    }else {
+                                        pom = new Pom(xArr[1].x, HEIGHT - xArr[1].y, 1)
+                                    }
+                                    poms.push(pom)
+                                    // console.log(xArr, pom);
+                                    car1.remove = true
+                                    car2.remove = true
+                                }
+                            }
+                        }
+                        
+                        
+                    }
+                }
+
+
+               
+
+                cars.forEach(item => {
+                    item.update()
+                    item.draw(ctx)
+                })
+                poms.forEach(item => {
+                    item.update(delay)
+                    item.draw(ctx)
+                })
+                cars = cars.filter(item => !item.remove)
+                poms = poms.filter(item => !item.deleteMark)
+
+                // console.log(cars.length);
+                
+              
+                requestAnimationFrame(animate)
+            }
+            animate()
+
+            function  reset() {
+                grandMother.fallDown = false
+                totalBox.style.width = '0'
+                totalBox.style.height = '0'
+                animate()
+            }
+
+            setInterval(() => {
+                if (totalBox.gongde >= 0 && grandMother.fallDown) {
+                    reset()
+                    status.innerHTML = '老奶奶复活了！'
+                }
+            }, 100)
+        </script>
+    </body>
+</html>

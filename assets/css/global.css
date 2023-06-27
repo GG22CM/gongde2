@@ -1,0 +1,68 @@
+
+
+#totalBox {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    height: 0;
+    width: 0;
+    overflow: hidden;
+    background-color: black;
+    z-index: 999;
+    transition: all 0.5s ease;
+}
+
+#gun {
+    position: absolute;
+    top: 0%;
+    left: 0%;
+    /* transform: translateX(-50%); */
+    width: calc(477px / 4);
+    height: calc(600px / 4);
+    background-image: url(../img/gun.png);
+    background-size: cover;
+}
+
+#muyu {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: calc(984px / 4);
+    height: calc(774px / 4);
+    background-image: url(../img/muyu.png);
+    background-size: cover;
+ 
+}
+
+#totalBox:active > #muyu {
+    width: calc(984px / 4 * 0.9);
+    height: calc(774px / 4 * 0.9);
+}
+
+#totalBox:active > #gun {
+    transform: rotateZ(40deg);
+}
+
+
+#container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    color: black;
+    z-index: 999;
+    width: 100px;
+}
+
+.result {
+    font-size: 16px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    user-select: none;
+
+}
+
+
+
